@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -41,5 +42,18 @@ public class UserRepository {
         } catch (NullPointerException e) {
             throw new NullPointerException("Fail SignUp");
         }
+    }
+
+    public List<UserVo> getAllUsers() {
+        String query = "select * from user_tb order by user_id";
+
+        return jdbcTemplate.query(query, (rs, rowNum) ->
+            new UserVo(
+                rs.getLong("user_id"),
+                rs.getString("user_name"),
+                rs.getTimestamp("created_at").toLocalDateTime(),
+                rs.getTimestamp("modified_at").toLocalDateTime()
+            )
+        );
     }
 }
