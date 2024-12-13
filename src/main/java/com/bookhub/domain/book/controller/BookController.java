@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 @RestController
 @RequiredArgsConstructor
@@ -16,7 +17,11 @@ public class BookController {
     private final BookService bookService;
 
     @GetMapping("/search")
-    public void searchBook(@ModelAttribute SearchBookRequestDto requestDto) {
-        bookService.searchBook(requestDto);
+    public ModelAndView searchBook(@ModelAttribute SearchBookRequestDto requestDto) {
+        ModelAndView mv = new ModelAndView("test");
+
+        mv.addObject("search", bookService.searchBook(requestDto));
+
+        return mv;
     }
 }

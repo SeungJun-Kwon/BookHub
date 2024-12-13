@@ -1,13 +1,13 @@
 package com.bookhub.domain.book.service;
 
 import com.bookhub.domain.book.dto.SearchBookRequestDto;
+import com.bookhub.domain.book.dto.SearchBookResponseDto;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -31,7 +31,7 @@ public class BookService {
     private final String baseUrl = "https://openapi.naver.com/";
     private final String path = "v1/search/book.json";
 
-    public void searchBook(SearchBookRequestDto requestDto) {
+    public String searchBook(SearchBookRequestDto requestDto) {
         URI uri = UriComponentsBuilder
             .fromHttpUrl(baseUrl)
             .path(path)
@@ -48,8 +48,17 @@ public class BookService {
             .header(headerClientSecret, clientSecret)
             .build();
 
-        ResponseEntity<String> exchange = restTemplate.exchange(req, String.class);
+        ResponseEntity<SearchBookResponseDto> exchange = restTemplate.exchange(req, SearchBookResponseDto.class);
 
-        System.out.println(exchange.getBody());
+        // JSON으로 변환
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonResponse = "";
+        try {
+            jsonResponse = objectMapper.writeValueAsString(exchange.getBody());
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        return jsonResponse;
     }
 }
